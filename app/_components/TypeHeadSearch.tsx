@@ -13,8 +13,6 @@ import { useDebouncedValue } from "../_hooks/useDebouncedValue";
 
 type Status = "idle" | "loading" | "success" | "empty" | "error";
 
-// ---------- Component ----------
-
 export default function CountryTypeahead() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -55,8 +53,7 @@ export default function CountryTypeahead() {
 
     fetchCountries(trimmed, controller.signal)
       .then((data) => {
-        // A newer request may have started (and even resolved) while this
-        // one was in flight. Drop this result if it's no longer current.
+        // A newer request may have started (and even resolved) while this one was in flight.
         if (thisRequestId !== requestIdRef.current) return;
         setResults(data);
         setStatus(data.length === 0 ? "empty" : "success");
@@ -107,7 +104,7 @@ export default function CountryTypeahead() {
           break;
       }
     },
-    [isOpen, results, activeIndex, handleSelect]
+    [isOpen, results, activeIndex, handleSelect],
   );
 
   // Keep the active option scrolled into view during keyboard nav.
@@ -119,7 +116,7 @@ export default function CountryTypeahead() {
 
   const activeOptionId = useMemo(
     () => (activeIndex >= 0 ? `country-option-${activeIndex}` : undefined),
-    [activeIndex]
+    [activeIndex],
   );
 
   return (
@@ -190,23 +187,40 @@ export default function CountryTypeahead() {
                   role="option"
                   aria-selected={index === activeIndex}
                   onMouseDown={(e) => {
-                    e.preventDefault(); // keep focus on the input
+                    e.preventDefault();
                     handleSelect(country);
                   }}
                   onMouseEnter={() => setActiveIndex(index)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer ${
+                  className={`px-3 py-2 text-sm cursor-pointer ${
                     index === activeIndex ? "bg-blue-50" : "hover:bg-gray-50"
                   }`}
                 >
-                  <img
-                    src={country.flag}
-                    alt=""
-                    className="h-4 w-6 object-cover rounded-sm"
-                  />
-                  <span>{country.name}</span>
-                  <span className="ml-auto text-xs text-gray-400">
-                    {country.code}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={country.flag}
+                      alt=""
+                      className="h-4 w-6 object-cover rounded-sm"
+                    />
+                    <span>{country.name}</span>
+                    <span className="ml-auto text-xs text-gray-400">
+                      {country.code}
+                    </span>
+                  </div>
+
+                  {country.currencies.length > 0 && (
+                    <div className="mt-1 text-xs text-gray-500">
+                      Currency:{" "}
+                      {country.currencies
+                        .map((c) => `${c.name} (${c.symbol})`)
+                        .join(", ")}
+                    </div>
+                  )}
+
+                  <div className="mt-1 text-xs text-gray-500">
+                    {country.borders.length > 0
+                      ? `Borders: ${country.borders.join(", ")}`
+                      : "No land borders"}
+                  </div>
                 </li>
               ))}
           </ul>
