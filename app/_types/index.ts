@@ -9,3 +9,9 @@ export interface CountryApiItem {
   cca2: string;
   flags: { svg: string; png: string };
 }
+
+export interface NormalizedCountry {
+  name: string;
+  code: string;
+  flag: string;
+}
